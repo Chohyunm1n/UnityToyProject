@@ -1,20 +1,35 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ObjectSpawn : MonoBehaviour
 {
 
     //오브젝트 정보를 담고 있을 공간 필요
-    public ObjectData[] allStackObect;
+    [SerializeField]
+    private ObjectData[] allStackObect;
+    [SerializeField]
+    private Transform lastStackObject;
 
-
-    //TODO: 오브젝트가 생성 구조 및 위치
-    //오브젝트 생성될 때 레벨에 따라 난이도 추가
     public int SpawnObject()
     {
         var stackObjects = SelectStackObject();
 
         var objectCount = SetupStackObjectCount();
 
+        var index = SetupStartAndEndIndex(stackObjects);
+
+        for (int i = 0; i < objectCount; i++)
+        {
+            var stackObject = Instantiate(stackObjects[Random.Range(index.Item1, index.Item2)]);
+
+            stackObject.position = new Vector3 (0, -i * 0.5f, 0);
+            stackObject.eulerAngles = new Vector3(0, -i *5, 0);
+
+            stackObject.SetParent(transform);
+
+        }
+
+        lastStackObject.position = new Vector3(0, -objectCount * 0.5f, 0);
         return objectCount;
     }
     
@@ -55,10 +70,23 @@ public class ObjectSpawn : MonoBehaviour
     }
 
 
+    private (int, int) SetupStartAndEndIndex(Transform[] transform)
+    {
+        int level = PlayerPrefs.GetInt("level");
 
+        float startDuraction = 0.05f;
+        float endDuraction = 0.1f;
+
+
+        int startIndex = Mathf.Min((int)(level * startDuraction), transform.Length-1);
+        int endIndex = Mathf.Min((int)(level * endDuraction) + 2, transform.Length);
+
+        return (startIndex, endIndex);
+    }
 
 
     // 구조체 // 생성될 오브젝트 데이터
+    [System.Serializable]
     public struct ObjectData
     {
         public Transform[] objectStack;
