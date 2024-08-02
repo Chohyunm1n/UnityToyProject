@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     private AudioClip jumSound;
 
 
-    [Header("Player Jump Sound")]
+    [Header("Player Material")]
     [SerializeField]
     private Material playerMaterial;
 
@@ -42,10 +42,12 @@ public class PlayerController : MonoBehaviour
         //중복 충돌 방지
         if (rb.velocity.y > 0) return;
 
-        PlaySound(jumSound);
+
         rb.velocity = new Vector3 (0, jump, 0);
 
-        OnCrashMotion(collision.transform);
+        PlaySound(jumSound);
+        //OnCrashMotion(collision.transform);
+
 
         OnParticle();
 
@@ -83,7 +85,6 @@ public class PlayerController : MonoBehaviour
             var mainModule = particle[i].main;
             mainModule.startColor = playerMaterial.color;
             break;
-
         }
     }
 }
