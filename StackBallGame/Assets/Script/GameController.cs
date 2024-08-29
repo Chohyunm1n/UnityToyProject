@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
     [SerializeField]
-    private ObjectSpawn os;
+    private PlatformSpawner platformSpawner;
     
     [SerializeField]
     private UIController uiController;
@@ -17,7 +16,7 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        os.SpawnObject();
+        platformSpawner.SpawnObject();
 
         randomColor = GetComponent<RandomColor>();
         randomColor.ColorHSV();

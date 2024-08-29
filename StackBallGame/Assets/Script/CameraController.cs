@@ -1,14 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
 
-    [SerializeField] private Transform target;
-    [SerializeField] private Transform lastPlatform;
+    [SerializeField]
+    private Transform target;
+    [SerializeField]
+    private Transform lastPlatform;
 
-    private float platformWeigth = 4;
+    private float platformWeight = 4;
 
     private void Update()
     {
@@ -18,10 +18,9 @@ public class CameraController : MonoBehaviour
 
     private void FollowTarget()
     {
-        if (transform.position.y > target.position.y && transform.position.y > lastPlatform.position.y + platformWeigth)
+        if ( transform.position.y > target.position.y && transform.position.y > lastPlatform.position.y + platformWeight )
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-            
+            transform.position = new Vector3(transform.position.x, target.position.y, transform.position.z);
         }
 }
 }
