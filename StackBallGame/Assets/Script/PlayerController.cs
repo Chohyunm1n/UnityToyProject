@@ -4,6 +4,11 @@ using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
+    
+    [Header ("Components")]
+    [SerializeField]
+    private GameController gameController;
+    
     [Header("Player Jump")]
     [SerializeField]
     private float jump = 5;
@@ -41,6 +46,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if ( !gameController.IsGamePlay) return;
+        
         UpdateMoustButton();
         UpdateDropToSmash();
     }
@@ -65,6 +72,9 @@ public class PlayerController : MonoBehaviour
                     platform.BreakAllParts();
                     
                     PlaySound(jumpBreakClip);
+                    
+                    gameController.OnCollisionWithPlatform();
+                    
                 }
             }
             else if (collision.gameObject.CompareTag("NonBreakPart"))

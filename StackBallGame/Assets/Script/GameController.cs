@@ -11,13 +11,16 @@ public class GameController : MonoBehaviour
     
     private RandomColor randomColor;
 
+    private int brokePlatformCount = 0; // 현재 부서진 플랫폼 수
+    private int totalPlatformCount = 0; //전체
 
     public bool IsGamePlay { private set; get; } = false;
 
     private void Awake()
     {
-        platformSpawner.SpawnObject();
+        //platformSpawner.SpawnObject();
 
+        totalPlatformCount = platformSpawner.SpawnObject();
         randomColor = GetComponent<RandomColor>();
         randomColor.ColorHSV();
     }
@@ -41,5 +44,11 @@ public class GameController : MonoBehaviour
     {
         IsGamePlay = true;
         uiController.GameStart();
+    }
+
+    public void OnCollisionWithPlatform(int addedScore = 1)
+    {
+        brokePlatformCount++;
+        uiController.LevelProgressBar = (float)brokePlatformCount / (float)totalPlatformCount;
     }
 }
