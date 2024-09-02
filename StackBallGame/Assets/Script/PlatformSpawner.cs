@@ -15,7 +15,9 @@ public class PlatformSpawner : MonoBehaviour
         var stackObjects = SelectStackObject();
 
         var platformCount = SetupStackObjectCount();
-
+        
+        //TestCode
+        //var platformCount = 200;
         var index = SetupStartAndEndIndex(stackObjects);
 
         for (int i = 0; i < platformCount; i++)

@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private AudioClip jumSound;
     [SerializeField]
     private AudioClip jumpBreakClip;
+    [SerializeField]
+    private AudioClip powerBreakClip;
 
     [Header("Player Material")]
     [SerializeField]
@@ -35,13 +37,14 @@ public class PlayerController : MonoBehaviour
     private bool isClicked = false;
     
     private Rigidbody rb;
-
     private AudioSource audioSource;
-
+    private PlayerPowerMode playerPowerMode;
+    
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        playerPowerMode = GetComponent<PlayerPowerMode>();
     }
 
     private void Update()
@@ -50,6 +53,8 @@ public class PlayerController : MonoBehaviour
         
         UpdateMoustButton();
         UpdateDropToSmash();
+        
+        playerPowerMode.UpdatePowerMode(isClicked);
     }
     
     private void OnCollisionEnter(Collision collision)
@@ -63,26 +68,50 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (collision.gameObject.CompareTag("BreakPart"))
-            {
-                var platform = collision.transform.parent.GetComponent<PlatformController>();
+            
+            //if (collision.gameObject.CompareTag("BreakPart"))
+            //{
+            //    var platform = collision.transform.parent.GetComponent<PlatformController>();
 
-                if (platform.isCollision == false)
+            //    if (platform.isCollision == false)
+            //    {
+            //        platform.BreakAllParts();
+                    
+            //        PlaySound(jumpBreakClip);
+                    
+            //        gameController.OnCollisionWithPlatform();
+                    
+            //    }
+            //}
+            //else if (collision.gameObject.CompareTag("NonBreakPart"))
+            //{
+            //    rb.isKinematic = true;
+                
+            //    Debug.Log("Game Over");
+            //}
+
+            if (playerPowerMode.IsPowerMode)
+            {
+                if (collision.gameObject.CompareTag("BreakPart") ||
+                    collision.gameObject.CompareTag("NonBreakPart"))
                 {
-                    platform.BreakAllParts();
-                    
-                    PlaySound(jumpBreakClip);
-                    
-                    gameController.OnCollisionWithPlatform();
-                    
+                    OnCollisionWithBreakPart(collision, powerBreakClip, 2);
                 }
             }
-            else if (collision.gameObject.CompareTag("NonBreakPart"))
+            else
             {
-                rb.isKinematic = true;
-                
-                Debug.Log("Game Over");
+                if (collision.gameObject.CompareTag("BreakPart"))
+                {
+                    OnCollisionWithBreakPart(collision, jumpBreakClip, 1);
+                }
+                else if (collision.gameObject.CompareTag("NonBreakPart"))
+                {
+                    rb.isKinematic = true;
+
+                    Debug.Log("Game Over");
+                }
             }
+            
         }
 
     }
@@ -90,7 +119,7 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         if (rb.velocity.y > 0) return;
-        
+        if (isClicked) return;
         OnJumpProcess(collision);
     }
 
@@ -158,6 +187,19 @@ public class PlayerController : MonoBehaviour
         }
     }
     
+    private void OnCollisionWithBreakPart(Collision collision, AudioClip clip, int addedScore)
+    {
+        var platform = collision.transform.parent.GetComponent<PlatformController>();
+
+        if (platform.isCollision == false)
+        {
+            platform.BreakAllParts();
+
+            PlaySound(clip);
+
+            gameController.OnCollisionWithPlatform(addedScore);
+        }
+    }
     
     
 }
