@@ -114,6 +114,11 @@ public class PlayerController : MonoBehaviour
                 }
             }
             
+            if (collision.gameObject.CompareTag("LastPlatform") && gameController.IsGamePlay)
+            {
+                playerPowerMode.DeactivateAll();
+                gameController.GameClear();
+            }
         }
 
     }
@@ -121,7 +126,7 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         if (rb.velocity.y > 0) return;
-        if (isClicked) return;
+        if (isClicked && !collision.gameObject.CompareTag("LastPlatform")) return;
         OnJumpProcess(collision);
     }
 

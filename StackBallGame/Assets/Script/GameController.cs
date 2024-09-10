@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,9 +14,14 @@ public class GameController : MonoBehaviour
     [Header("SFX")]
     [SerializeField]
     private AudioClip gameOverClip;
+    [SerializeField]
+    private AudioClip gameClearClip;
+    
     [Header("VFX")]
     [SerializeField]
     private GameObject gameOverEffect;
+    [SerializeField] 
+    private GameObject gameClearEffect;
     
     private RandomColor randomColor;
     private AudioSource audioSource;
@@ -29,6 +35,8 @@ public class GameController : MonoBehaviour
     {
         //platformSpawner.SpawnObject();
         audioSource = GetComponent<AudioSource>();
+        currentScore = PlayerPrefs.GetInt("CURRENTSCORE");
+        uiController.CurrentScore = currentScore;
         totalPlatformCount = platformSpawner.SpawnObject();
         randomColor = GetComponent<RandomColor>();
         randomColor.ColorHSV();
@@ -39,7 +47,7 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) ||         PlayerPrefs.GetInt("DEACTIVATEMAIN") == 1)
             {
                 GameStart();
                 yield break;
@@ -68,9 +76,27 @@ public class GameController : MonoBehaviour
         
         uiController.GameOver(currentScore);
 
+        PlayerPrefs.SetInt("CURRENTSCORE", 0);
         StartCoroutine(nameof(SceneLoadToOnClick));
         
+    }
 
+    public void GameClear()
+    {
+        IsGamePlay = false;
+
+        audioSource.clip = gameClearClip;
+        audioSource.Play();
+        gameClearEffect.SetActive(true);
+        
+        UpdateHighScore(); 
+        uiController.GameClear();
+        
+        PlayerPrefs.SetInt("LEVEL", PlayerPrefs.GetInt("LEVEL")+1);
+
+        PlayerPrefs.SetInt("CURRENTSCORE", currentScore);
+        StartCoroutine(nameof(SceneLoadToOnClick));
+        
     }
     public void OnCollisionWithPlatform(int addedScore = 1)
     {
@@ -101,5 +127,15 @@ public class GameController : MonoBehaviour
             yield return null;
         }
     }
-    
+
+    private void OnApplicationQuit()
+    {
+        PlayerPrefs.SetInt("CURRENTSCORE",0);
+    }
+
+    [ContextMenu("Reset All PlayerPrefs")]
+    private void ResetAll()
+    {
+        PlayerPrefs.DeleteAll();
+    }
 }
